@@ -5,7 +5,7 @@ Created on Mon Nov 26 15:54:40 2018
 @author: himan
 """
 
-#CONSTRUCCION DEL ARBOL DE DECISION
+#CONSTRUCCION DEL BOSQUE ALEATORIO
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 
@@ -25,6 +25,6 @@ forest = RandomForestClassifier(n_jobs=2,oob_score=True, n_estimators=5000)
 
 forest.fit(X,Y)
 
-#print(forest.oob_decision_function_)
+print(forest.oob_decision_function_)
 
 print(forest.oob_score_)
