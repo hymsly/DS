@@ -9,9 +9,9 @@ Created on Mon Nov 26 15:54:40 2018
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 
-data = pd.read_csv('./TABLAS BCP/tcFiltrada.txt',sep=',')
+data = pd.read_csv('tcFiltrada.txt',sep=',')
 
-#print(data.head())
+print(data.head())
 
 columns = data.columns.values.tolist()
 

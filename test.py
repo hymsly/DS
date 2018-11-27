@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import KFold
 from sklearn.cross_validation import cross_val_score
 
-data = pd.read_csv('./TABLAS BCP/tcFiltrada.txt',sep=',')
+data = pd.read_csv('tcFiltrada.txt',sep=',')
 
 #print(data.head())
 
@@ -32,8 +32,7 @@ def graph(ruta,tree):
     with open(ruta,"w") as dotfile:
         export_graphviz(tree,out_file=dotfile,feature_names=predictors)
         dotfile.close()
-    file = open("bcp_tree.dot","r")
-    #graph("gcp_tree.dot",tree)
+    file = open(ruta,"r")
     text = file.read()
     print(text)
 
@@ -44,7 +43,7 @@ def getScore(depth,pred,targ):
     cv = KFold(n=pred.shape[0],n_folds=500,shuffle=True,random_state=1)
     scores = cross_val_score(tree,pred,targ,scoring="accuracy",cv = cv,n_jobs=1)
     score = np.mean(scores)
-    graph("./TABLAS BCP/bcp_tree.dot",tree)
+    graph("bcp_tree.dot",tree)
     return score
 
 print("Score depth=",8," -> ",getScore(8,X,Y))

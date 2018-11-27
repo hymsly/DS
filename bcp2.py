@@ -16,9 +16,9 @@ def readAtributo(ruta):
         atributos.append(atributo.rstrip('\n'))
     return atributos
 
-data = pd.read_csv('./TABLAS BCP/tc.txt',sep=',')
+data = pd.read_csv('tc.txt',sep=',')
 
-atributos = readAtributo('./TABLAS BCP/atributos.txt')
+atributos = readAtributo('atributos.txt')
 
 dataFiltrada = data[atributos]
 
@@ -57,7 +57,6 @@ meansInteger = ["numproductos_pas",
 "meses_pmsavmf_6_1000",
 "antiguedad_act_vig",
 "cons_mtocns0",
-"desde_ult_mtodisef",
 "flg_07v_12_100",
 "cnds_19e_count_12",
 "cnds_21s_count_12",
@@ -65,20 +64,14 @@ meansInteger = ["numproductos_pas",
 "cndsmxmt17m_count_12",
 "cndsmxmt06t_count_6",
 "cnetigcl_d_count_12",
+"vecescontinuo",
 "cnetmtco_a_count_6"]
 meansDouble = ["pmpasivo_med_6",
 "ctdempreportadoclimed6",
 "deudir12_deutot12",
 "deudir6_deutot6",
 "mtolintot_dmi0_pro6",
-"bal_nhi_sum_12",
 "linea_min_2",
-"rt_mtpgos_sldfm_12",
-"rt_pagos_balance",
-"rt_cnetmtfac6m_c_sum_12_12",
-"rt_cnetmtfac6m_d_sum_12_12",
-"rt_cnetmtfac6m_e_sum_12_12",
-"rt_cnetmtfac6m_f_sum_12_12",
 "md_sum_12",
 "prcnpsclet_med_12",
 "prigclet_med_12",
@@ -87,20 +80,12 @@ meansDouble = ["pmpasivo_med_6",
 "mdigclet_02r_med_12",
 "prcnpsclet_med_6",
 "prigclet_med_6",
-"prigclet_07v_med_6",
-"mdigclet_11t_med_12",
 "prcnpsclet_12m_med_12",
-"cnop_16b_med_12",
-"prcnpsclet_16b_med_12",
-"prigclet_16b_med_12",
-"mt_17m_sum_12",
-"prmtcoet_17m_med_12",
 "igcletmxmt50f_med_12",
 "igcletmxmt100f_med_12",
 "igcletmxcn100f_med_12",
 "mtcoetmxcn_med_12",
 "mtcoetmxcnfds_med_12",
-"mtcoetmxcn06t_med_12",
 "igcletmxmt_med_6",
 "igcletmxcn_med_6",
 "igcletmxmt05s_med_6",
@@ -109,7 +94,6 @@ meansDouble = ["pmpasivo_med_6",
 "cnpscletmxmtop_med_12",
 "ctgetmtcomxmtop_med_12",
 "igcletmxmtop02r_med_12",
-"ctgetmtcomxmtop02r_med_12",
 "cnfecmxmt_med_6",
 "sfent1_sfent24",
 "utl_12_tc_v1",
@@ -123,16 +107,17 @@ def label_race(row,value,atr):
         if value[i]==row[atr]:
             return i
     return -1
-def label_replace(row,value,atr):
-    if(np.isnan(row[atr])):
-        return value
-    return row[atr]
-
 def Discreto(df,atributo):
     values = df[atributo].unique().tolist()
     df[atributo] = df.apply(lambda row:label_race(row,values,atributo),axis = 1)
     return df
-
+for cat in categoricos:
+    dataFiltrada = Discreto(dataFiltrada,cat)
+    
+def label_replace(row,value,atr):
+    if(np.isnan(row[atr])):
+        return value
+    return row[atr]
 def MeanReplace(df,atributo,integer):
     X = df[atributo].values.tolist()
     cnt = 0
@@ -141,19 +126,14 @@ def MeanReplace(df,atributo,integer):
         if(np.isnan(x)):
             continue
         cnt = cnt+1
-        suma += x
+        suma = suma + x
     value = cnt/suma
     if(integer):
         value = int(round(value))
     df[atributo] = df.apply(lambda row:label_replace(row,value,atributo),axis = 1)
     return df
-
-for cat in categoricos:
-    dataFiltrada = Discreto(dataFiltrada,cat)
-
 for mean in meansInteger:
     dataFiltrada = MeanReplace(dataFiltrada,mean,1)
-
 for mean in meansDouble:
     dataFiltrada = MeanReplace(dataFiltrada,mean,0)
 
@@ -166,4 +146,4 @@ for col in columns:
     if(df>0):
         print(df)
 
-dataFiltrada.to_csv('./TABLAS BCP/tcFiltrada.txt',sep=',',index=False)
+dataFiltrada.to_csv('tcFiltrada.txt',sep=',',index=False)
